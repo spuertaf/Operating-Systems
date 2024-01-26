@@ -33,9 +33,10 @@ def benchmark(img_paths: list[str],
             non_voting_parallel_thresholding_time: float = _measure_func_time(parallel_thresholding(img, True))
             times_taken = [threshold_single_node_time,
                             voting_parallel_thresholding_time,
-                            non_voting_parallel_thresholding_time]
+                            non_voting_parallel_thresholding_time,
+                            size]
             total_times.append(times_taken)
-        time_df = pd.DataFrame(columns=["threshold_single_node_time", "voting_parallel_thresholding_time", "non_voting_parallel_thresholding_time"] ,data= total_times)
+        time_df = pd.DataFrame(columns=["threshold_single_node_time", "voting_parallel_thresholding_time", "non_voting_parallel_thresholding_time", "size"] ,data= total_times)
         time_df["file_name"] = _get_file_name(path)
         results.append(time_df)
     return results
