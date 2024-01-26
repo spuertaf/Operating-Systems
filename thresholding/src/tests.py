@@ -8,11 +8,11 @@ import pandas as pd
 #import seaborn as sns
 #import matplotlib.pyplot as plt
 
-def _measure_func_time(func):
+def _measure_func_time(func) -> float:
     start_time = timeit.default_timer()
     func
     end_time = timeit.default_timer()
-    elapsed_time = start_time - end_time
+    elapsed_time = (start_time - end_time)
     return elapsed_time
 
 
