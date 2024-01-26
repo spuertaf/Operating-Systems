@@ -12,7 +12,7 @@ def _measure_func_time(func) -> float:
     start_time = timeit.default_timer()
     func
     end_time = timeit.default_timer()
-    elapsed_time = (start_time - end_time)
+    elapsed_time = (end_time - start_time) * 1000 #Miliseconds
     return elapsed_time
 
 
