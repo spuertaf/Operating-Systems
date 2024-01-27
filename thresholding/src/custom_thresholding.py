@@ -8,6 +8,15 @@ from numpy import (
 )
 
 def _find_optimal_threshold_otsu(img: ndarray):
+    """
+    Finds the optimal threshold for image segmentation using Otsu's method.
+
+    Args:
+        img (ndarray): The input image as a NumPy array.
+
+    Returns:
+        int: The optimal threshold value for image segmentation.
+    """
     # Obtain image's histogram
     hist, _ = histogram(img.flatten(), bins=256, range=[0,256])
     # Normalize the histogram
@@ -41,6 +50,22 @@ def _find_optimal_threshold_otsu(img: ndarray):
 
 def simple_image_thresholding(img: ndarray, 
                               optimal_threshold: int = None):
+    """
+    Applies simple image thresholding to the input image.
+    For every pixel value where the value is greater than the optimal threshold
+    the said pixel value is set to 255 (white), for the opposite case,
+    where the pixel value is lesser than the optimal threshold the pixel value
+    is set to 0 (black).
+
+    Args:
+        img (ndarray): The input image as a NumPy array.
+        optimal_threshold (int, optional): The threshold value for image segmentation.
+            If None, the optimal threshold is calculated using Otsu's method.
+            Defaults to None.
+
+    Returns:
+        ndarray: The thresholded image as a NumPy array.
+    """
     if optimal_threshold is None:        
         optimal_threshold = _find_optimal_threshold_otsu(img)
     
