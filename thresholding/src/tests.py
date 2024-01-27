@@ -8,8 +8,19 @@ import cv2
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from numpy import ndarray
+
 
 def _measure_func_time(func) -> float:
+    """
+    Measures the execution time of a given function.
+
+    Args:
+        func (Callable): The function for which the execution time needs to be measured.
+
+    Returns:
+        float: The elapsed time in milliseconds for the execution of the provided function.
+    """
     start_time = timeit.default_timer()
     func
     end_time = timeit.default_timer()
@@ -18,12 +29,36 @@ def _measure_func_time(func) -> float:
 
 
 def _get_file_name(file_path: str):
+    """
+    Extracts the file name from the given file path.
+
+    Args:
+        file_path (str): A string representing the full path of the file.
+
+    Returns:
+        str: The file name extracted from the provided file path.
+    """
     return os.path.basename(file_path)
 
 
 def benchmark(img_paths: list[str], 
               img_sizes:list[tuple] = [(300, 300), (900, 900), (2700, 2700)],
               use_cv2: bool = False) -> list[pd.DataFrame]:
+    """
+    Benchmarks image processing algorithms on a set of images with different sizes.
+    In case the use_cv2 argument is False the custom_thresholding simple_image_thresholding algorithm
+    is used.
+
+    Args:
+        img_paths (list[str]): A list of file paths to the images for benchmarking.
+        img_sizes (list[tuple], optional): A list of tuples representing different image sizes to be tested.
+            Defaults to [(300, 300), (900, 900), (2700, 2700)].
+        use_cv2 (bool, optional): A flag indicating whether to use the OpenCV library for image processing.
+            Defaults to False.
+
+    Returns:
+        list[pd.DataFrame]: A list of Pandas DataFrames containing benchmarking results for each image.
+    """
     thresholding_algorithm = simple_image_thresholding if use_cv2 is False else threshold_image
     results = []
     for path in img_paths:
@@ -49,8 +84,32 @@ def benchmark(img_paths: list[str],
 def plot_benchmarking(img_paths: list[str], 
                      img_sizes:list[tuple] = [(1000, 1000), (2000, 2000), (3000, 3000), (4000, 4000), (5000, 5000)],
                      use_cv2: bool = False) -> list[pd.DataFrame]:
+    """
+    Performs benchmarking on a set of images and plots the results.
+
+    Args:
+        img_paths (List[str]): A list of file paths to the images for benchmarking.
+        img_sizes (List[Tuple[int, int]], optional): A list of tuples representing different image sizes to be tested.
+            Defaults to [(1000, 1000), (2000, 2000), (3000, 3000), (4000, 4000), (5000, 5000)].
+        use_cv2 (bool, optional): A flag indicating whether to use the OpenCV library for image processing.
+            Defaults to False.
+
+    Returns:
+        List[pd.DataFrame]: A list of Pandas DataFrames containing benchmarking results for each image.
+    """
     
-    def plot_results(images_metrics: list[pd.DataFrame], figure_axes):
+    def plot_results(images_metrics: list[pd.DataFrame], 
+                     figure_axes: ndarray) -> ndarray:
+        """
+        Plots benchmarking results for different image processing metrics.
+
+        Args:
+            images_metrics (list[pd.DataFrame]): A list of Pandas DataFrames containing benchmarking results for each image.
+            figure_axes (ndarray): The figure axes or subplot layout for displaying the plots.
+
+        Returns:
+            ndarray: The modified figure axes with the plotted results.
+        """
         metrics_cols = ["threshold_single_node_time", 
                         "voting_parallel_thresholding_time", 
                         "non_voting_parallel_thresholding_time"]
