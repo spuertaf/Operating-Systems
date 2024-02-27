@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ProcessPoolExecutor
 from single_node import _find_optimal_threshold, threshold_image
+from custom_thresholding import _find_optimal_threshold_otsu, simple_image_thresholding
 from functools import partial
 
 from numpy import array, ndarray, mean, vstack
@@ -60,7 +61,9 @@ def split_image(img: ndarray, num_parts: int = None) -> ndarray[ndarray]:
     return array(img_parts)
 
 
-def _find_parallel_optimal_threshold(img: ndarray, num_processes: int = None) -> int:
+def _find_parallel_optimal_threshold(img: ndarray, 
+                                     num_processes: int = None,
+                                     use_cv2: bool = False) -> int:
     """
     Finds the optimal threshold for image thresholding using parallel processing.
     The optimal threshold is found for every image partition then the mean of all will 
@@ -75,10 +78,11 @@ def _find_parallel_optimal_threshold(img: ndarray, num_processes: int = None) ->
     Returns:
         int: The optimal threshold for image thresholding.
     """
+    optimal_threshold_algorithm = _find_optimal_threshold_otsu if use_cv2 is False else _find_optimal_threshold
     num_processes:int = _get_or_check_processes(num_processes)
     img_parts: ndarray = split_image(img) 
     with ProcessPoolExecutor(max_workers=num_processes) as executor:
-        optimal_threshold_votes: list = list(executor.map(_find_optimal_threshold, img_parts))
+        optimal_threshold_votes: list = list(executor.map(optimal_threshold_algorithm, img_parts))
     print(f"The optimal thresholds for each partition are: {optimal_threshold_votes}")
     optimal_threshold = int(mean(optimal_threshold_votes))
     print(f"The optimal threshold is: {optimal_threshold}")
@@ -100,7 +104,8 @@ def _merge_img_parts(img_parts: ndarray[ndarray]) -> ndarray:
 
 def parallel_thresholding(img,
                           optimal_threshold_per_partition: bool = False, 
-                          num_processes: int = None):
+                          num_processes: int = None,
+                          use_cv2: bool = False):
     """
     Applies thresholding to an image using parallel processing.
 
@@ -117,13 +122,14 @@ def parallel_thresholding(img,
     Returns:
         ndarray: Thresholded image matrix.
     """
+    thresholding_algorithm = simple_image_thresholding if use_cv2 is False else threshold_image
     num_processes:int = _get_or_check_processes(num_processes)
     optimal_threshold = _find_parallel_optimal_threshold(img)
     img_parts: ndarray = split_image(img)
     if optimal_threshold_per_partition is False:
-        threshold_n_img = partial(threshold_image, optimal_threshold=optimal_threshold)
+        threshold_n_img = partial(thresholding_algorithm, optimal_threshold=optimal_threshold)
     else: 
-        threshold_n_img = threshold_image
+        threshold_n_img = thresholding_algorithm
     with ProcessPoolExecutor(max_workers=num_processes) as executor:
         thresholded_images: list = list(executor.map(threshold_n_img, img_parts))
     return _merge_img_parts(thresholded_images)
