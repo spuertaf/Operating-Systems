@@ -21,7 +21,7 @@ class Image(AbstractFile):
         return (os.path.basename(self._img_path)).replace(img_extension, ".bin")
         
     def read_file(self) -> ndarray:
-        with open(os.path.abspath(f"..\\src\\bin\\{self._get_img_dot_bin()}"), "rb") as bin_file:
+        with open(os.path.abspath(f"..\\Operating-Systems\\BinImagesFiles\\src\\bin\\{self._get_img_dot_bin()}"), "rb") as bin_file:
             rows, cols, dims, dtype_bytes = struct.unpack("IIII", bin_file.read(16))
             data = zeros((rows, cols, dims))
             
@@ -42,7 +42,7 @@ class Image(AbstractFile):
         rows, cols, dims = img_array.shape
         dtype_bytes = Dtypes.get_dtype_bytes(str(img_array.dtype))
         
-        with open(os.path.abspath(f"..\\src\\bin\\{self._get_img_dot_bin()}"), "wb") as bin_file:
+        with open(os.path.abspath(f"..\\Operating-Systems\\BinImagesFiles\\src\\bin\\{self._get_img_dot_bin()}"), "wb") as bin_file:
             bin_file.write(struct.pack("IIII", rows, cols, dims, dtype_bytes))
             
             for i in range(rows):
