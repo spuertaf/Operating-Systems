@@ -5,7 +5,21 @@ from copy import deepcopy
 
 
 class FlagsParser:
+    """
+    A class for parsing flags.
+
+    Attributes:
+        _description (str): The description of the flags parser.
+        parser (argparse.ArgumentParser): The ArgumentParser instance.
+        _args (Namespace): The parsed arguments.
+    """
     def __init__(self, description: str = None):
+        """
+        Initializes a FlagsParser.
+
+        Args:
+            description (str, optional): The description of the flags parser. Defaults to None.
+        """
         self._description = """
         Flags parser for .med format writter. The following are allowed flags: \n
         
@@ -14,12 +28,33 @@ class FlagsParser:
         self._args: Union[None, Namespace] = None
     
     def get_flag(self, flag_name: str) -> Union[str, None]:
+        """
+        Get the value of a specific flag.
+
+        Args:
+            flag_name (str): The name of the flag.
+
+        Returns:
+            Union[str, None]: The value of the flag.
+        """
         return getattr(self._args, flag_name, None)
     
     def get_flags(self) -> dict[str, str]:
+        """
+        Get all parsed flags.
+
+        Returns:
+            dict[str, str]: A dictionary containing all parsed flags.
+        """
         return deepcopy(vars(self._args))  # deepcopy due to if any of the values in vars is modified the value in the object gets modified
     
     def build(self) -> 'FlagsParser':
+        """
+        Build the flags parser.
+
+        Returns:
+            FlagsParser: The FlagsParser instance.
+        """
         self.parser.add_argument("-name", "--proyect_name", type=str, help="")
         self.parser.add_argument("-out", "--output_folder_path", type=str, help="")  # the proyect's parent folder
         self.parser.add_argument("-data_folder", "--proyect_data_folder", type=str, help="")
@@ -30,10 +65,10 @@ class FlagsParser:
         return self
     
     def existent_flags(self) -> bool:
-        return any(vars(self._args).values())
-        
+        """
+        Check if any flag exists.
 
-if __name__ == "__main__":
-    fg = FlagsParser().build()
-    print(fg.get_flags())
-    
+        Returns:
+            bool: True if any flag exists, False otherwise.
+        """
+        return any(vars(self._args).values())
