@@ -13,7 +13,7 @@ class FlatFile(AbstractFile):
         self._abs_file_path = os.path.abspath(self._file_path)
 
 
-    def read_file(self):
+    def read_image(self):
         AbstractFile.is_valid_file_path(self._file_path)
         with open(self._abs_file_path, "rb") as bin_file:
             rows, cols, dtype_bytes = struct.unpack("ccc", bin_file.read(3))
