@@ -5,7 +5,6 @@ from services.dot_aku_writer import DotAkuWriter
 def main():
     fg = FlagsParser().build()
     flags: dict[str, str] = fg.get_flags()
-    print(flags)
     proyect = (
         ProyectBuilder(proyect_name=flags["proyect_name"])
         .build_parent_folder(flags["output_folder_path"])
