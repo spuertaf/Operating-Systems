@@ -20,10 +20,7 @@ class FlagsParser:
         Args:
             description (str, optional): The description of the flags parser. Defaults to None.
         """
-        self._description = """
-        Flags parser for .med format writter. The following are allowed flags: \n
-        
-        """ if description is None else description
+        self._description = "Flags parser for .med format writter" if description is None else description
         self.parser = argparse.ArgumentParser(description=self._description)
         self._args: Union[None, Namespace] = None
     
@@ -55,12 +52,12 @@ class FlagsParser:
         Returns:
             FlagsParser: The FlagsParser instance.
         """
-        self.parser.add_argument("-name", "--proyect_name", type=str, help="")
-        self.parser.add_argument("-out", "--output_folder_path", type=str, help="")  # the proyect's parent folder
-        self.parser.add_argument("-data_folder", "--proyect_data_folder", type=str, help="")
-        self.parser.add_argument("-bin_folder", "--proyect_bin_folder", type=str, help="")
-        self.parser.add_argument("-img", "--input_img_path", type=str, help="")
-        self.parser.add_argument("-text", "--input_text_path", type=str, help="")
+        self.parser.add_argument("-name", "--proyect_name", type=str, help="Name of the project.")
+        self.parser.add_argument("-out", "--output_folder_path", type=str, help="Path to the output folder where the project will be saved.")  # the proyect's parent folder
+        self.parser.add_argument("-data_folder", "--proyect_data_folder", type=str, help="Path to the folder containing project data.")
+        self.parser.add_argument("-bin_folder", "--proyect_bin_folder", type=str, help="Path to the folder containing project binary files.")
+        self.parser.add_argument("-img", "--input_img_path", type=str, help="Path to the input image file.")
+        self.parser.add_argument("-text", "--input_text_path", type=str, help="Path to the input text file.")
         self._args = (self.parser).parse_args()
         return self
     
