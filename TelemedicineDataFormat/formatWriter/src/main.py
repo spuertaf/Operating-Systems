@@ -1,6 +1,6 @@
 from services.flags_parser import FlagsParser
 from services.proyect_builder import ProyectBuilder
-from services.dot_aku_writer import DotAkuWriter
+from file.dot_aku_writer import DotAkuWriter
 
 def main():
     fg = FlagsParser().build()

@@ -1,5 +1,8 @@
 import os
 import struct
+from io import BufferedWriter
+from file.dot_aku_metadata import DotAkuMetadata
+from services.text_parser import TextParser
 
 import cv2
 from numpy import ndarray
@@ -34,12 +37,12 @@ class DotAkuWriter:
         self.BIN_FILE_NAME = "aku.bin"  # TODO: Make this dynamic according to the users needs
         self._aku_file_path = os.path.abspath(os.path.join(self._bin_folder_path, self.BIN_FILE_NAME))
     
-    def _write_image(self, aku_file, keep_open = False) -> 'DotAkuWriter':
+    def _write_image(self, aku_file: BufferedWriter, keep_open = False) -> 'DotAkuWriter':
         """
         Write image data to the .aku file.
 
         Args:
-            aku_file (file): The .aku file object.
+            aku_file (BufferedWriter): The .aku file object.
             keep_open (bool, optional): Whether to keep the file open after writing. Defaults to False.
 
         Returns:
@@ -61,12 +64,14 @@ class DotAkuWriter:
         
         return self
                  
-    def _write_metadata(self, aku_file, keep_open = False) -> 'DotAkuWriter':
+    def _write_metadata(self, 
+                        aku_file: BufferedWriter, 
+                        keep_open = False) -> 'DotAkuWriter':
         """
         Write metadata to the .aku file.
 
         Args:
-            aku_file (file): The .aku file object.
+            aku_file (BufferedWriter): The .aku file object.
             keep_open (bool, optional): Whether to keep the file open after writing. Defaults to False.
 
         Returns:
@@ -74,6 +79,21 @@ class DotAkuWriter:
         """
         if self._text_path is None:
             return self
+        
+        file_content: list[str] = TextParser(self._text_path).get_file_content()
+        metadata = DotAkuMetadata(*file_content)
+        
+        aku_file.write(struct.pack("H", metadata.id))
+        aku_file.write(struct.pack("c", metadata.gender_n_age))
+        aku_file.write(struct.pack("c", metadata.num_bytes_date))
+        aku_file.write(struct.pack("<" + str(len(metadata.date)) + "s", metadata.date))
+        aku_file.write(struct.pack("c", metadata.num_bytes_description))
+        aku_file.write(struct.pack("<" + str(len(metadata.description)) + "s", metadata.description))
+        
+        if not keep_open:
+            aku_file.close()
+        
+        return self
         
     def write_file(self) -> 'DotAkuWriter':
         """
@@ -86,7 +106,7 @@ class DotAkuWriter:
             (
                 self
                 ._write_image(aku_file, keep_open=True)
-                #._write_metadata(aku_file, keep_open=True)
+                ._write_metadata(aku_file, keep_open=True)
             )
             aku_file.close()
         return self
