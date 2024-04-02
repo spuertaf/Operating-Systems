@@ -2,11 +2,28 @@ from io import BufferedWriter
 import struct
 
 class DotAkuMetadata:
+    """Represents metadata extracted from a binary file.
+
+    This class parses binary data to extract patient information.
+
+    Attributes:
+        _id (int): Patient ID.
+        _gender_n_age (str): Binary representation of gender and age.
+        _gender (str): Gender of the patient ('M' for male, 'F' for female).
+        _age (int): Age of the patient.
+        _date (str): Date of the patient record.
+        _description (list): Description of the patient.
+
+    Methods:
+        __init__: Initialize DotAkuMetadata instance.
+        __str__: Return a formatted string representation of patient information.
+        get_metadata: Return metadata as a list.
+    """
     def __init__(self, bin_file: BufferedWriter):
-        """_summary_
+        """Initialize DotAkuMetadata instance.
 
         Args:
-            bin_file (BufferedWriter): _description_
+            bin_file (BufferedWriter): Binary file stream.
         """
         self._id = struct.unpack("H", bin_file.read(2))[0]
         self._gender_n_age = '{0:08b}'.format(struct.unpack("c", bin_file.read(1))[0][0])
@@ -21,6 +38,11 @@ class DotAkuMetadata:
         
     
     def __str__(self) -> str:
+        """Return a formatted string representation of patient information.
+
+        Returns:
+            str: Formatted patient information.
+        """
         return f"""
         Patient Information:
         Date: {self._date}
@@ -32,10 +54,10 @@ class DotAkuMetadata:
         """
         
     def get_metadata(self) -> list:
-        """_summary_
+        """Return metadata as a list.
 
         Returns:
-            list: _description_
+            list: List containing patient metadata.
         """
         return [
             self._date, 
