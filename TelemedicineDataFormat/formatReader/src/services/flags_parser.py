@@ -43,7 +43,7 @@ class FlagsParser:
         Returns:
             FlagsParser: The FlagsParser instance.
         """
-        self.parser.add_argument("-proyect", "--proyect_parent_folder", type=str, help="")  # the proyect's parent folder
+        self.parser.add_argument("-proyect", "--proyect_parent_folder", type=str, help="Path to the folder where the project was saved.")
         self._args = (self.parser).parse_args()
         return self
     
