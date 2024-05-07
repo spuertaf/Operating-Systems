@@ -1,7 +1,10 @@
 from tkinter import *
 from tkinter import messagebox as messagebox
 from tkinter import filedialog as filedialog
+
 from services.stack import Stack
+from utils.window_utils import get_luma_file_path
+from services.compressor import Compressor
 
 
 class TextEditorWindow:
@@ -123,11 +126,11 @@ class TextEditorWindow:
         self.text_box.config(state=NORMAL)
         if self.is_file_open and self.is_file_changed:
             self.save_file()
-        filename = filedialog.askopenfilename(filetypes=self.file_types, defaultextension=".txt")
+        filename = filedialog.askopenfilename(filetypes=self.file_types, defaultextension=".luma")
         if len(filename) != 0:
             self.is_file_changed = False
-            with open(filename, "r") as file:
-                text = file.read()
+            with open(filename, "rb") as file:
+                text = Compressor().decompress(file)
             self.text_box.delete('1.0', END)
             self.text_box.insert(END, text)
             self.window.wm_title(filename)
@@ -146,7 +149,7 @@ class TextEditorWindow:
         result = messagebox.askquestion('Save File', 'Do You Want to Save Changes?')
         if result == "yes":
             if len(self.file_path) == 0:
-                save_file = filedialog.asksaveasfile(filetypes=self.file_types, defaultextension=".txt")
+                save_file = filedialog.asksaveasfile(filetypes=self.file_types, defaultextension=".luma")
                 if save_file:
                     self.write_file(save_file.name)
                     self.text_box.delete('1.0', END)
@@ -178,10 +181,13 @@ class TextEditorWindow:
             file: File to write content to.
 
         """
-        input_value = self.text_box.get("1.0", "end-1c")
-        with open(file, "w") as outfile:
-            outfile.write(input_value)
-
+        file_content = self.text_box.get("1.0", "end-1c")
+        bin_file_path = get_luma_file_path(file)
+        Compressor().compress(
+            file_content=file_content,
+            out_file_path=bin_file_path
+        )
+        
     def retrieve_input(self):
         """
         Retrieves input from the text box.
